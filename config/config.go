@@ -259,8 +259,8 @@ func parseAndValidateConfigBytes(yamlBytes []byte) (config *Config, err error) {
 		if err := validateConnectivityConfig(config); err != nil {
 			return nil, err
 		}
+		config.UI.MaximumNumberOfResults = config.Storage.MaximumNumberOfResults
 	}
-	config.UI.MaximumNumberOfResults = config.Storage.MaximumNumberOfResults
 	return
 }
 

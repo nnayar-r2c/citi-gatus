@@ -3,6 +3,7 @@ package ui
 import (
 	"bytes"
 	"errors"
+	"github.com/TwiN/gatus/v5/storage"
 	"html/template"
 
 	static "github.com/TwiN/gatus/v5/web"
@@ -48,11 +49,12 @@ func (btn *Button) Validate() error {
 // GetDefaultConfig returns a Config struct with the default values
 func GetDefaultConfig() *Config {
 	return &Config{
-		Title:       defaultTitle,
-		Description: defaultDescription,
-		Header:      defaultHeader,
-		Logo:        defaultLogo,
-		Link:        defaultLink,
+		Title:                  defaultTitle,
+		Description:            defaultDescription,
+		Header:                 defaultHeader,
+		Logo:                   defaultLogo,
+		Link:                   defaultLink,
+		MaximumNumberOfResults: storage.DefaultMaximumNumberOfResults,
 	}
 }
 
