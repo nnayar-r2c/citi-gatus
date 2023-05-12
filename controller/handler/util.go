@@ -1,10 +1,9 @@
 package handler
 
 import (
+	"github.com/TwiN/gatus/v5/config"
 	"net/http"
 	"strconv"
-
-	"github.com/TwiN/gatus/v5/storage/store/common"
 )
 
 const (
@@ -13,12 +12,9 @@ const (
 
 	// DefaultPageSize is the default page siZE to use if none is specified or an invalid value is provided
 	DefaultPageSize = 20
-
-	// MaximumPageSize is the maximum page size allowed
-	MaximumPageSize = common.MaximumNumberOfResults
 )
 
-func extractPageAndPageSizeFromRequest(r *http.Request) (page int, pageSize int) {
+func extractPageAndPageSizeFromRequest(r *http.Request, cfg *config.Config) (page int, pageSize int) {
 	var err error
 	if pageParameter := r.URL.Query().Get("page"); len(pageParameter) == 0 {
 		page = DefaultPage
@@ -38,8 +34,8 @@ func extractPageAndPageSizeFromRequest(r *http.Request) (page int, pageSize int)
 		if err != nil {
 			pageSize = DefaultPageSize
 		}
-		if pageSize > MaximumPageSize {
-			pageSize = MaximumPageSize
+		if pageSize > cfg.Storage.MaximumNumberOfResults {
+			pageSize = cfg.Storage.MaximumNumberOfResults
 		} else if pageSize < 1 {
 			pageSize = DefaultPageSize
 		}

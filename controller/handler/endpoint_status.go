@@ -31,7 +31,7 @@ var (
 // Due to how intensive this operation can be on the storage, this function leverages a cache.
 func EndpointStatuses(cfg *config.Config) http.HandlerFunc {
 	return func(writer http.ResponseWriter, r *http.Request) {
-		page, pageSize := extractPageAndPageSizeFromRequest(r)
+		page, pageSize := extractPageAndPageSizeFromRequest(r, cfg)
 		value, exists := cache.Get(fmt.Sprintf("endpoint-status-%d-%d", page, pageSize))
 		var data []byte
 		if !exists {
@@ -98,31 +98,33 @@ func getEndpointStatusesFromRemoteInstances(remoteConfig *remote.Config) ([]*cor
 }
 
 // EndpointStatus retrieves a single core.EndpointStatus by group and endpoint name
-func EndpointStatus(writer http.ResponseWriter, r *http.Request) {
-	page, pageSize := extractPageAndPageSizeFromRequest(r)
-	vars := mux.Vars(r)
-	endpointStatus, err := store.Get().GetEndpointStatusByKey(vars["key"], paging.NewEndpointStatusParams().WithResults(page, pageSize).WithEvents(1, common.MaximumNumberOfEvents))
-	if err != nil {
-		if err == common.ErrEndpointNotFound {
-			http.Error(writer, err.Error(), http.StatusNotFound)
+func EndpointStatus(cfg *config.Config) http.HandlerFunc {
+	return func(writer http.ResponseWriter, r *http.Request) {
+		page, pageSize := extractPageAndPageSizeFromRequest(r, cfg)
+		vars := mux.Vars(r)
+		endpointStatus, err := store.Get().GetEndpointStatusByKey(vars["key"], paging.NewEndpointStatusParams().WithResults(page, pageSize).WithEvents(1, cfg.Storage.MaximumNumberOfEvents))
+		if err != nil {
+			if err == common.ErrEndpointNotFound {
+				http.Error(writer, err.Error(), http.StatusNotFound)
+				return
+			}
+			log.Printf("[handler][EndpointStatus] Failed to retrieve endpoint status: %s", err.Error())
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Printf("[handler][EndpointStatus] Failed to retrieve endpoint status: %s", err.Error())
-		http.Error(writer, err.Error(), http.StatusInternalServerError)
-		return
+		if endpointStatus == nil {
+			log.Printf("[handler][EndpointStatus] Endpoint with key=%s not found", vars["key"])
+			http.Error(writer, "not found", http.StatusNotFound)
+			return
+		}
+		output, err := json.Marshal(endpointStatus)
+		if err != nil {
+			log.Printf("[handler][EndpointStatus] Unable to marshal object to JSON: %s", err.Error())
+			http.Error(writer, "unable to marshal object to JSON", http.StatusInternalServerError)
+			return
+		}
+		writer.Header().Add("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write(output)
 	}
-	if endpointStatus == nil {
-		log.Printf("[handler][EndpointStatus] Endpoint with key=%s not found", vars["key"])
-		http.Error(writer, "not found", http.StatusNotFound)
-		return
-	}
-	output, err := json.Marshal(endpointStatus)
-	if err != nil {
-		log.Printf("[handler][EndpointStatus] Unable to marshal object to JSON: %s", err.Error())
-		http.Error(writer, "unable to marshal object to JSON", http.StatusInternalServerError)
-		return
-	}
-	writer.Header().Add("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
-	_, _ = writer.Write(output)
 }

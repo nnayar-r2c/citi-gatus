@@ -34,7 +34,7 @@ func CreateRouter(cfg *config.Config) *mux.Router {
 	// Endpoints
 	unprotected.Handle("/v1/config", ConfigHandler{securityConfig: cfg.Security}).Methods("GET")
 	protected.HandleFunc("/v1/endpoints/statuses", EndpointStatuses(cfg)).Methods("GET")
-	protected.HandleFunc("/v1/endpoints/{key}/statuses", EndpointStatus).Methods("GET")
+	protected.HandleFunc("/v1/endpoints/{key}/statuses", EndpointStatus(cfg)).Methods("GET")
 	unprotected.HandleFunc("/v1/endpoints/{key}/health/badge.svg", HealthBadge).Methods("GET")
 	unprotected.HandleFunc("/v1/endpoints/{key}/uptimes/{duration}/badge.svg", UptimeBadge).Methods("GET")
 	unprotected.HandleFunc("/v1/endpoints/{key}/response-times/{duration}/badge.svg", ResponseTimeBadge(cfg)).Methods("GET")
