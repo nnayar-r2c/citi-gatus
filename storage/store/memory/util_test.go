@@ -1,11 +1,11 @@
 package memory
 
 import (
-	"github.com/TwiN/gatus/v5/storage"
 	"testing"
 	"time"
 
 	"github.com/TwiN/gatus/v5/core"
+	"github.com/TwiN/gatus/v5/storage"
 	"github.com/TwiN/gatus/v5/storage/store/common/paging"
 )
 

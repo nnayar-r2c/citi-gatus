@@ -3,9 +3,9 @@ package ui
 import (
 	"bytes"
 	"errors"
-	"github.com/TwiN/gatus/v5/storage"
 	"html/template"
 
+	"github.com/TwiN/gatus/v5/storage"
 	static "github.com/TwiN/gatus/v5/web"
 )
 

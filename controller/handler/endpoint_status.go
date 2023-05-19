@@ -31,7 +31,7 @@ var (
 // Due to how intensive this operation can be on the storage, this function leverages a cache.
 func EndpointStatuses(cfg *config.Config) http.HandlerFunc {
 	return func(writer http.ResponseWriter, r *http.Request) {
-		page, pageSize := extractPageAndPageSizeFromRequest(r, cfg)
+		page, pageSize := extractPageAndPageSizeFromRequest(r, cfg.Storage.MaximumNumberOfResults)
 		value, exists := cache.Get(fmt.Sprintf("endpoint-status-%d-%d", page, pageSize))
 		var data []byte
 		if !exists {
@@ -100,7 +100,7 @@ func getEndpointStatusesFromRemoteInstances(remoteConfig *remote.Config) ([]*cor
 // EndpointStatus retrieves a single core.EndpointStatus by group and endpoint name
 func EndpointStatus(cfg *config.Config) http.HandlerFunc {
 	return func(writer http.ResponseWriter, r *http.Request) {
-		page, pageSize := extractPageAndPageSizeFromRequest(r, cfg)
+		page, pageSize := extractPageAndPageSizeFromRequest(r, cfg.Storage.MaximumNumberOfResults)
 		vars := mux.Vars(r)
 		endpointStatus, err := store.Get().GetEndpointStatusByKey(vars["key"], paging.NewEndpointStatusParams().WithResults(page, pageSize).WithEvents(1, cfg.Storage.MaximumNumberOfEvents))
 		if err != nil {

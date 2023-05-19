@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"github.com/TwiN/gatus/v5/config"
-	"github.com/TwiN/gatus/v5/storage"
 	"net/http"
 	"testing"
+
+	"github.com/TwiN/gatus/v5/config"
+	"github.com/TwiN/gatus/v5/storage"
 )
 
 func TestExtractPageAndPageSizeFromRequest(t *testing.T) {
@@ -62,7 +63,7 @@ func TestExtractPageAndPageSizeFromRequest(t *testing.T) {
 	for _, scenario := range scenarios {
 		t.Run("page-"+scenario.Page+"-pageSize-"+scenario.PageSize, func(t *testing.T) {
 			request, _ := http.NewRequest("GET", fmt.Sprintf("/api/v1/statuses?page=%s&pageSize=%s", scenario.Page, scenario.PageSize), http.NoBody)
-			actualPage, actualPageSize := extractPageAndPageSizeFromRequest(request, cfg)
+			actualPage, actualPageSize := extractPageAndPageSizeFromRequest(request, cfg.Storage.MaximumNumberOfResults)
 			if actualPage != scenario.ExpectedPage {
 				t.Errorf("expected %d, got %d", scenario.ExpectedPage, actualPage)
 			}

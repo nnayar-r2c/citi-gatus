@@ -154,15 +154,18 @@ func TestStore_InsertCleansUpOldUptimeEntriesProperly(t *testing.T) {
 func TestStore_InsertCleansUpEventsAndResultsProperly(t *testing.T) {
 	store, _ := NewStore("sqlite", t.TempDir()+"/TestStore_InsertCleansUpEventsAndResultsProperly.db", false, storage.DefaultMaximumNumberOfResults, storage.DefaultMaximumNumberOfEvents)
 	defer store.Close()
-	for i := 0; i < store.resultsCleanUpThreshold+store.eventsCleanUpThreshold; i++ {
+	resultsCleanUpThreshold := store.maximumNumberOfResults + resultsAboveMaximumCleanUpThreshold
+	eventsCleanUpThreshold := store.maximumNumberOfEvents + eventsAboveMaximumCleanUpThreshold
+	for i := 0; i < resultsCleanUpThreshold+eventsCleanUpThreshold; i++ {
 		store.Insert(&testEndpoint, &testSuccessfulResult)
 		store.Insert(&testEndpoint, &testUnsuccessfulResult)
 		ss, _ := store.GetEndpointStatusByKey(testEndpoint.Key(), paging.NewEndpointStatusParams().WithResults(1, storage.DefaultMaximumNumberOfResults*5).WithEvents(1, storage.DefaultMaximumNumberOfEvents*5))
-		if len(ss.Results) > store.resultsCleanUpThreshold+1 {
-			t.Errorf("number of results shouldn't have exceeded %d, reached %d", store.resultsCleanUpThreshold, len(ss.Results))
+
+		if len(ss.Results) > resultsCleanUpThreshold+1 {
+			t.Errorf("number of results shouldn't have exceeded %d, reached %d", resultsCleanUpThreshold, len(ss.Results))
 		}
-		if len(ss.Events) > store.eventsCleanUpThreshold+1 {
-			t.Errorf("number of events shouldn't have exceeded %d, reached %d", store.eventsCleanUpThreshold, len(ss.Events))
+		if len(ss.Events) > eventsCleanUpThreshold+1 {
+			t.Errorf("number of events shouldn't have exceeded %d, reached %d", eventsCleanUpThreshold, len(ss.Events))
 		}
 	}
 	store.Clear()
@@ -390,7 +393,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("DROP TABLE endpoints")
+	_, _ = store.db.Exec("drop table endpoints")
 	// And now we'll try to insert something in our broken schema
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err == nil {
 		t.Fatal("expected an error")
@@ -419,7 +422,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("DROP TABLE endpoint_events")
+	_, _ = store.db.Exec("drop table endpoint_events")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err != nil {
 		t.Fatal("expected no error, because this should silently fails, got", err.Error())
 	}
@@ -435,7 +438,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("DROP TABLE endpoint_results")
+	_, _ = store.db.Exec("drop table endpoint_results")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err == nil {
 		t.Fatal("expected an error")
 	}
@@ -451,7 +454,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("DROP TABLE endpoint_result_conditions")
+	_, _ = store.db.Exec("drop table endpoint_result_conditions")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err == nil {
 		t.Fatal("expected an error")
 	}
@@ -464,7 +467,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("DROP TABLE endpoint_uptimes")
+	_, _ = store.db.Exec("drop table endpoint_uptimes")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err != nil {
 		t.Fatal("expected no error, because this should silently fails, got", err.Error())
 	}

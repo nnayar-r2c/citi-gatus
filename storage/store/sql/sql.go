@@ -33,6 +33,10 @@ const (
 	uptimeRetention = 7 * 24 * time.Hour
 
 	cacheTTL = 10 * time.Minute
+
+	eventsAboveMaximumCleanUpThreshold = 10
+
+	resultsAboveMaximumCleanUpThreshold = 10
 )
 
 var (
@@ -59,11 +63,6 @@ type Store struct {
 	maximumNumberOfResults int
 	// maximumNumberOfEvents is the maximum number of events that an endpoint can have
 	maximumNumberOfEvents int
-
-	// eventsCleanUpThreshold is a maximum number of events before triggering a clean up
-	eventsCleanUpThreshold int
-	// resultsCleanUpThreshold is a maximum number of results before triggering a clean up
-	resultsCleanUpThreshold int
 }
 
 // NewStore initializes the database and creates the schema if it doesn't already exist in the path specified
@@ -75,12 +74,10 @@ func NewStore(driver, path string, caching bool, maximumNumberOfResults int, max
 		return nil, ErrPathNotSpecified
 	}
 	store := &Store{
-		driver:                  driver,
-		path:                    path,
-		maximumNumberOfResults:  maximumNumberOfResults,
-		maximumNumberOfEvents:   maximumNumberOfEvents,
-		resultsCleanUpThreshold: maximumNumberOfResults + 10,
-		eventsCleanUpThreshold:  maximumNumberOfEvents + 10,
+		driver:                 driver,
+		path:                   path,
+		maximumNumberOfResults: maximumNumberOfResults,
+		maximumNumberOfEvents:  maximumNumberOfEvents,
 	}
 	var err error
 	if store.db, err = sql.Open(driver, path); err != nil {
@@ -309,7 +306,7 @@ func (s *Store) Insert(endpoint *core.Endpoint, result *core.Result) error {
 		// Clean up old events if there's more than twice the maximum number of events
 		// This lets us both keep the table clean without impacting performance too much
 		// (since we're only deleting MaximumNumberOfEvents at a time instead of 1)
-		if numberOfEvents > int64(s.eventsCleanUpThreshold) {
+		if numberOfEvents > int64(s.maximumNumberOfEvents+eventsAboveMaximumCleanUpThreshold) {
 			if err = s.deleteOldEndpointEvents(tx, endpointID); err != nil {
 				log.Printf("[sql][Insert] Failed to delete old events for group=%s; endpoint=%s: %s", endpoint.Group, endpoint.Name, err.Error())
 			}
@@ -326,7 +323,7 @@ func (s *Store) Insert(endpoint *core.Endpoint, result *core.Result) error {
 	if err != nil {
 		log.Printf("[sql][Insert] Failed to retrieve total number of results for group=%s; endpoint=%s: %s", endpoint.Group, endpoint.Name, err.Error())
 	} else {
-		if numberOfResults > int64(s.resultsCleanUpThreshold) {
+		if numberOfResults > int64(s.maximumNumberOfResults+resultsAboveMaximumCleanUpThreshold) {
 			if err = s.deleteOldEndpointResults(tx, endpointID); err != nil {
 				log.Printf("[sql][Insert] Failed to delete old results for group=%s; endpoint=%s: %s", endpoint.Group, endpoint.Name, err.Error())
 			}

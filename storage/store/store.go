@@ -95,10 +95,11 @@ func Initialize(cfg *storage.Config) error {
 	if cfg == nil {
 		// This only happens in tests
 		log.Println("[store][Initialize] nil storage config passed as parameter. This should only happen in tests. Defaulting to an empty config.")
-		cfg = &storage.Config{
-			MaximumNumberOfResults: storage.DefaultMaximumNumberOfResults,
-			MaximumNumberOfEvents:  storage.DefaultMaximumNumberOfEvents,
-		}
+		cfg = &storage.Config{}
+	}
+	if cfg.MaximumNumberOfResults == 0 && cfg.MaximumNumberOfEvents == 0 {
+		cfg.MaximumNumberOfResults = storage.DefaultMaximumNumberOfResults
+		cfg.MaximumNumberOfEvents = storage.DefaultMaximumNumberOfEvents
 	}
 	if len(cfg.Path) == 0 && cfg.Type != storage.TypePostgres {
 		log.Printf("[store][Initialize] Creating storage provider of type=%s", cfg.Type)

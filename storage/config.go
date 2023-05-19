@@ -32,10 +32,10 @@ type Config struct {
 	Caching bool `yaml:"caching,omitempty"`
 
 	// MaximumNumberOfResults is the maximum number of results that an endpoint can have
-	MaximumNumberOfResults int `yaml:"maximumNumberOfResults,omitempty"`
+	MaximumNumberOfResults int `yaml:"maximum-number-of-results,omitempty"`
 
 	// MaximumNumberOfEvents is the maximum number of events that an endpoint can have
-	MaximumNumberOfEvents int `yaml:"maximumNumberOfEvents,omitempty"`
+	MaximumNumberOfEvents int `yaml:"maximum-number-of-events,omitempty"`
 }
 
 // ValidateAndSetDefaults validates the configuration and sets the default values (if applicable)

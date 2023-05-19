@@ -303,8 +303,8 @@ func TestParseAndValidateConfigBytes(t *testing.T) {
 storage:
   type: sqlite
   path: %s
-  maximumNumberOfResults: 10
-  maximumNumberOfEvents: 5
+  maximum-number-of-results: 10
+  maximum-number-of-events: 5
 maintenance:
   enabled: true
   start: 00:00
