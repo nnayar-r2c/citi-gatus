@@ -23,13 +23,14 @@ var (
 
 // Config is the configuration for the UI of Gatus
 type Config struct {
-	Title                  string   `yaml:"title,omitempty"`       // Title of the page
-	Description            string   `yaml:"description,omitempty"` // Meta description of the page
-	Header                 string   `yaml:"header,omitempty"`      // Header is the text at the top of the page
-	Logo                   string   `yaml:"logo,omitempty"`        // Logo to display on the page
-	Link                   string   `yaml:"link,omitempty"`        // Link to open when clicking on the logo
-	Buttons                []Button `yaml:"buttons,omitempty"`     // Buttons to display below the header
-	MaximumNumberOfResults int      // MaximumNumberOfResults to display on the page
+	Title       string   `yaml:"title,omitempty"`       // Title of the page
+	Description string   `yaml:"description,omitempty"` // Meta description of the page
+	Header      string   `yaml:"header,omitempty"`      // Header is the text at the top of the page
+	Logo        string   `yaml:"logo,omitempty"`        // Logo to display on the page
+	Link        string   `yaml:"link,omitempty"`        // Link to open when clicking on the logo
+	Buttons     []Button `yaml:"buttons,omitempty"`     // Buttons to display below the header
+
+	MaximumNumberOfResults int // MaximumNumberOfResults to display on the page, it's not configurable because we're passing it from the storage config
 }
 
 // Button is the configuration for a button on the UI

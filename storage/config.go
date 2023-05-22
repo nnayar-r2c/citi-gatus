@@ -49,10 +49,10 @@ func (c *Config) ValidateAndSetDefaults() error {
 	if c.Type == TypeMemory && len(c.Path) > 0 {
 		return ErrMemoryStorageDoesNotSupportPath
 	}
-	if c.MaximumNumberOfResults == 0 {
+	if c.MaximumNumberOfResults <= 0 {
 		c.MaximumNumberOfResults = DefaultMaximumNumberOfResults
 	}
-	if c.MaximumNumberOfEvents == 0 {
+	if c.MaximumNumberOfEvents <= 0 {
 		c.MaximumNumberOfEvents = DefaultMaximumNumberOfEvents
 	}
 	return nil

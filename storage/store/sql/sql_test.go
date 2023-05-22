@@ -393,7 +393,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("drop table endpoints")
+	_, _ = store.db.Exec("DROP TABLE endpoints")
 	// And now we'll try to insert something in our broken schema
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err == nil {
 		t.Fatal("expected an error")
@@ -422,7 +422,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("drop table endpoint_events")
+	_, _ = store.db.Exec("DROP TABLE endpoint_events")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err != nil {
 		t.Fatal("expected no error, because this should silently fails, got", err.Error())
 	}
@@ -438,7 +438,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("drop table endpoint_results")
+	_, _ = store.db.Exec("DROP TABLE endpoint_results")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err == nil {
 		t.Fatal("expected an error")
 	}
@@ -454,7 +454,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("drop table endpoint_result_conditions")
+	_, _ = store.db.Exec("DROP TABLE endpoint_result_conditions")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err == nil {
 		t.Fatal("expected an error")
 	}
@@ -467,7 +467,7 @@ func TestStore_BrokenSchema(t *testing.T) {
 		t.Fatal("expected no error, got", err.Error())
 	}
 	// Break
-	_, _ = store.db.Exec("drop table endpoint_uptimes")
+	_, _ = store.db.Exec("DROP TABLE endpoint_uptimes")
 	if err := store.Insert(&testEndpoint, &testSuccessfulResult); err != nil {
 		t.Fatal("expected no error, because this should silently fails, got", err.Error())
 	}
